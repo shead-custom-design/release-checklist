@@ -46,8 +46,8 @@ if __name__ == "__main__":
     arguments = parser.parse_args()
     term = blessings.Terminal()
 
-    commands = [[arguments.editor, f"{arguments.module}/__init__.py"]]
-    prompt(term, f"Set {arguments.module}.__version__ to {arguments.version}:", commands)
+    commands = [[arguments.editor, f"{arguments.module}/__init__.py"], [sys.executable, "setup.py", "develop"]]
+    prompt(term, f"Set {arguments.module}.__version__ to \"{arguments.version}\":", commands)
     run(arguments, commands)
 
     commands = [[arguments.editor, "docs/release-notes.rst"]]
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     run(arguments, commands)
 
     commands = [[arguments.editor, "docs/release-notes.rst"]]
-    prompt(term, "Add release notes in Github:", commands)
+    prompt(term, f"Create release \"{arguments.name} {arguments.version}\" in Github:", commands)
     run(arguments, commands)
 
     commands = [[sys.executable, "setup.py", "sdist"]]
@@ -94,8 +94,8 @@ if __name__ == "__main__":
     prompt(term, "Upload the source release to PyPi:", commands)
     run(arguments, commands)
 
-    commands = [[arguments.editor, f"{arguments.module}/__init__.py"]]
-    prompt(term, f"Bump {arguments.module}.__version__ to {arguments.nextversion}:", commands)
+    commands = [[arguments.editor, f"{arguments.module}/__init__.py"], [sys.executable, "setup.py", "develop"]]
+    prompt(term, f"Bump {arguments.module}.__version__ to \"{arguments.nextversion}\":", commands)
     run(arguments, commands)
 
     commands = [["git", "commit", "-a", "-m", "Bump version number."]]
