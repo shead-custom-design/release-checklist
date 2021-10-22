@@ -19,6 +19,7 @@ setup(
     author_email="tim@shead-custom-design.com",
     name="release-checklist",
     install_requires=[
+        "blessings",
     ],
     maintainer="Timothy M. Shead",
     maintainer_email="tim@shead-custom-design.gov",
