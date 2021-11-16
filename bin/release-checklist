@@ -10,8 +10,8 @@ import blessings
 parser = argparse.ArgumentParser(description="Simplifies releasing a Python package.")
 parser.add_argument("--dry-run", action="store_true", help="Don't actually make changes.")
 parser.add_argument("--editor", default="vi", help="Text editor. Default: %(default)s")
-parser.add_argument("org", help="Organization name.")
-parser.add_argument("module", help="Module name.")
+parser.add_argument("repo", help="Repository <org>/<repo> identifier.")
+parser.add_argument("module", help="Python module name.")
 parser.add_argument("name", help="Project name.")
 parser.add_argument("version", help="Package release version.")
 parser.add_argument("nextversion", help="Next package version after release.")
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     run(arguments, commands)
 
     commands = [[arguments.editor, "docs/release-notes.rst"]]
-    prompt(term, f"Post details to https://github.com/{arguments.org}/{arguments.module}/discussions", commands)
+    prompt(term, f"Post details to https://github.com/{arguments.repo}/discussions", commands)
     run(arguments, commands)
 
     prompt(term, "Remove any features that were deprecated in the new release:")
