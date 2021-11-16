@@ -10,9 +10,9 @@ import blessings
 parser = argparse.ArgumentParser(description="Simplifies releasing a Python package.")
 parser.add_argument("--dry-run", action="store_true", help="Don't actually make changes.")
 parser.add_argument("--editor", default="vi", help="Text editor. Default: %(default)s")
+parser.add_argument("name", help="Project name.")
 parser.add_argument("repo", help="Repository <org>/<repo> identifier.")
 parser.add_argument("module", help="Python module name.")
-parser.add_argument("name", help="Project name.")
 parser.add_argument("version", help="Package release version.")
 parser.add_argument("nextversion", help="Next package version after release.")
 
@@ -21,6 +21,7 @@ def prompt(term, message, commands=[], cwd=None):
     if cwd is not None:
         print("  " + term.red(" ".join(["pushd", cwd])))
     for command in commands:
+        command = [f"\"{item}\"" if " " in item else item for item in command]
         print("  " + term.red(" ".join(command)))
     if cwd is not None:
         print("  " + term.red(" ".join(["popd"])))
