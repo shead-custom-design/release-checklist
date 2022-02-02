@@ -11,6 +11,7 @@ parser = argparse.ArgumentParser(description="Simplifies releasing a Python pack
 parser.add_argument("--dry-run", action="store_true", help="Don't actually make changes.")
 parser.add_argument("--editor", default="vi", help="Text editor. Default: %(default)s")
 parser.add_argument("name", help="Project name.")
+parser.add_argument("pypi", help="PyPI name.")
 parser.add_argument("repo", help="Repository <org>/<repo> identifier.")
 parser.add_argument("module", help="Python module name.")
 parser.add_argument("version", help="Package release version.")
@@ -27,7 +28,14 @@ def prompt(term, message, commands=[], cwd=None):
         print("  " + term.red(" ".join(["popd"])))
 
     try:
-        input(" ")
+        command = input("skip/quit/<enter>: ")
+        if command == "":
+            return True
+        if command == "skip":
+            return False
+        if command == "quit":
+            print()
+            exit(0)
     except KeyboardInterrupt:
         print()
         exit(0)
@@ -48,76 +56,76 @@ if __name__ == "__main__":
     term = blessings.Terminal()
 
     commands = [[arguments.editor, f"{arguments.module}/__init__.py"], [sys.executable, "setup.py", "develop"]]
-    prompt(term, f"Set {arguments.module}.__version__ to \"{arguments.version}\":", commands)
-    run(arguments, commands)
+    if prompt(term, f"Set {arguments.module}.__version__ to \"{arguments.version}\":", commands):
+        run(arguments, commands)
 
     commands = [[arguments.editor, "docs/release-notes.rst"]]
-    prompt(term, "Update release notes:", commands)
-    run(arguments, commands)
+    if prompt(term, "Update release notes:", commands):
+        run(arguments, commands)
 
     commands = [[sys.executable, "regression.py"]]
-    prompt(term, "Run regression to ensure all tests pass:", commands)
-    run(arguments, commands)
+    if prompt(term, "Run regression to ensure all tests pass:", commands):
+        run(arguments, commands)
 
     commands = [["make", "clean"], ["make", "html"]]
-    prompt(term, "Rebuild documentation from scratch:", commands, cwd="docs")
-    run(arguments, commands, cwd="docs")
+    if prompt(term, "Rebuild documentation from scratch:", commands, cwd="docs"):
+        run(arguments, commands, cwd="docs")
 
     commands = [[arguments.editor, "setup.py"]]
-    prompt(term, "Update the classifiers and descriptions in setup.py:", commands)
-    run(arguments, commands)
+    if prompt(term, "Update the classifiers and descriptions in setup.py:", commands):
+        run(arguments, commands)
 
     commands = [["git", "commit", "-a", "-m", f"{arguments.name} version {arguments.version}"]]
-    prompt(term, "Commit the release changes:", commands)
-    run(arguments, commands)
+    if prompt(term, "Commit the release changes:", commands):
+        run(arguments, commands)
 
     commands = [["git", "push"]]
-    prompt(term, "Push the release commit:", commands)
-    run(arguments, commands)
+    if prompt(term, "Push the release commit:", commands):
+        run(arguments, commands)
 
     commands = [["git", "tag", "-a", f"v{arguments.version}", "-m", f"{arguments.name} version {arguments.version}"]]
-    prompt(term, "Tag the release commit:", commands)
-    run(arguments, commands)
+    if prompt(term, "Tag the release commit:", commands):
+        run(arguments, commands)
 
     commands = [["git", "push", "origin", f"v{arguments.version}"]]
-    prompt(term, "Push the release tag:", commands)
-    run(arguments, commands)
+    if prompt(term, "Push the release tag:", commands):
+        run(arguments, commands)
 
     commands = [[arguments.editor, "docs/release-notes.rst"]]
-    prompt(term, f"Create release \"{arguments.name} {arguments.version}\" in Github:", commands)
-    run(arguments, commands)
+    if prompt(term, f"Create release \"{arguments.name} {arguments.version}\" in Github:", commands):
+        run(arguments, commands)
 
     commands = [[sys.executable, "setup.py", "sdist"]]
-    prompt(term, "Build the new source release:", commands)
-    run(arguments, commands)
+    if prompt(term, "Build the new source release:", commands):
+        run(arguments, commands)
 
-    commands = [[sys.executable, "-m", "twine", "upload", "--repository", "pypi", f"dist/{arguments.module}-{arguments.version}.tar.gz"]]
-    prompt(term, "Upload the source release to PyPi:", commands)
-    run(arguments, commands)
+    commands = [[sys.executable, "-m", "twine", "upload", "--repository", "pypi", f"dist/{arguments.pypi}-{arguments.version}.tar.gz"]]
+    if prompt(term, "Upload the source release to PyPi:", commands):
+        run(arguments, commands)
 
     commands = [[arguments.editor, f"{arguments.module}/__init__.py"], [sys.executable, "setup.py", "develop"]]
-    prompt(term, f"Bump {arguments.module}.__version__ to \"{arguments.nextversion}\":", commands)
-    run(arguments, commands)
+    if prompt(term, f"Bump {arguments.module}.__version__ to \"{arguments.nextversion}\":", commands):
+        run(arguments, commands)
 
     commands = [["git", "commit", "-a", "-m", "Bump version number."]]
-    prompt(term, "Commit the development changes:", commands)
-    run(arguments, commands)
+    if prompt(term, "Commit the development changes:", commands):
+        run(arguments, commands)
 
     commands = [["git", "push"]]
-    prompt(term, "Push the development commit:", commands)
-    run(arguments, commands)
+    if prompt(term, "Push the development commit:", commands):
+        run(arguments, commands)
 
     commands = [[arguments.editor, "docs/release-notes.rst"]]
-    prompt(term, f"Post details to https://github.com/{arguments.repo}/discussions", commands)
-    run(arguments, commands)
+    if prompt(term, f"Post details to https://github.com/{arguments.repo}/discussions", commands):
+        run(arguments, commands)
 
     prompt(term, "Remove any features that were deprecated in the new release:")
 
     commands = [["git", "commit", "-a", "-m", "Remove deprecated code."]]
-    prompt(term, "Commit the deprecation changes:", commands)
-    run(arguments, commands)
+    if prompt(term, "Commit the deprecation changes:", commands):
+        run(arguments, commands)
 
     commands = [["git", "push"]]
-    prompt(term, "Push the deprecation commit:", commands)
-    run(arguments, commands)
+    if prompt(term, "Push the deprecation commit:", commands):
+        run(arguments, commands)
 
