@@ -55,7 +55,7 @@ if __name__ == "__main__":
     arguments = parser.parse_args()
     term = blessings.Terminal()
 
-    commands = [[arguments.editor, f"{arguments.module}/__init__.py"], [sys.executable, "setup.py", "develop"]]
+    commands = [[arguments.editor, f"{arguments.module}/__init__.py"], ["pip", "install", "-e", "."]]
     if prompt(term, f"Set {arguments.module}.__version__ to \"{arguments.version}\":", commands):
         run(arguments, commands)
 
@@ -71,8 +71,8 @@ if __name__ == "__main__":
     if prompt(term, "Rebuild documentation from scratch:", commands, cwd="docs"):
         run(arguments, commands, cwd="docs")
 
-    commands = [[arguments.editor, "setup.py"]]
-    if prompt(term, "Update the classifiers and descriptions in setup.py:", commands):
+    commands = [[arguments.editor, "pyproject.toml"]]
+    if prompt(term, "Update the classifiers and descriptions in pyproject.toml:", commands):
         run(arguments, commands)
 
     commands = [["git", "commit", "-a", "-m", f"{arguments.name} version {arguments.version}"]]
@@ -95,15 +95,15 @@ if __name__ == "__main__":
     if prompt(term, f"Create release \"{arguments.name} {arguments.version}\" in Github:", commands):
         run(arguments, commands)
 
-    commands = [[sys.executable, "setup.py", "sdist"]]
+    commands = [["rm", "-rf", "dist"], ["flit", "build"]]
     if prompt(term, "Build the new source release:", commands):
         run(arguments, commands)
 
-    commands = [[sys.executable, "-m", "twine", "upload", "--repository", "pypi", f"dist/{arguments.pypi}-{arguments.version}.tar.gz"]]
+    commands = [["flit", "publish"]]
     if prompt(term, "Upload the source release to PyPi:", commands):
         run(arguments, commands)
 
-    commands = [[arguments.editor, f"{arguments.module}/__init__.py"], [sys.executable, "setup.py", "develop"]]
+    commands = [[arguments.editor, f"{arguments.module}/__init__.py"], ["pip", "install", "-e", "."]]
     if prompt(term, f"Bump {arguments.module}.__version__ to \"{arguments.nextversion}\":", commands):
         run(arguments, commands)
 
