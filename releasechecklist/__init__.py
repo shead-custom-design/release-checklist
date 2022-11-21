@@ -1,11 +1,11 @@
-#!/usr/bin/env python
-
 import argparse
 import os
 import subprocess
 import sys
 
 import blessings
+
+__version__ = "0.2.0"
 
 parser = argparse.ArgumentParser(description="Simplifies releasing a Python package.")
 parser.add_argument("--dry-run", action="store_true", help="Don't actually make changes.")
@@ -51,7 +51,7 @@ def run(arguments, commands, cwd=None):
         if cwd is not None:
             os.chdir(oldcwd)
 
-if __name__ == "__main__":
+def main():
     arguments = parser.parse_args()
     term = blessings.Terminal()
 

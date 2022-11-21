@@ -1,0 +1,19 @@
+[build-system]
+requires = ["flit_core>=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "releasechecklist"
+
+[project]
+authors = [{name="Timothy M. Shead", email="tim@shead-custom-design.com"}]
+dependencies = [
+    "blessings",
+]
+description = "Simplifies releasing Python packages."
+dynamic = ["version"]
+maintainers = [{name="Timothy M. Shead", email="tim@shead-custom-design.com"}]
+name = "release-checklist"
+
+[project.scripts]
+release-checklist = "releasechecklist:main"
